@@ -53,8 +53,8 @@ export default class NeuralNetwork {
       callbackPeriod: (val) => { return typeof val === 'number' && val > 0; },
       timeout: (val) => { return typeof val === 'number' && val > 0 }
     };
-    Object.keys(options).forEach(key => {
-      if (validations[key] && !validations[key](options[key])) {
+    Object.keys(NeuralNetwork.trainDefaults).forEach(key => {
+      if (validations.hasOwnProperty(key) && !validations[key](options[key])) {
         throw new Error(`[${key}, ${options[key]}] is out of normal training range, your network will probably not train.`);
       }
     });
@@ -318,8 +318,8 @@ export default class NeuralNetwork {
    *       activation: ['sigmoid', 'relu', 'leaky-relu', 'tanh']
    */
   _updateTrainingOptions(opts) {
-    NeuralNetwork._validateTrainingOptions(opts);
-    Object.keys(NeuralNetwork.trainDefaults).forEach(opt => this.trainOpts[opt] = opts[opt] || this.trainOpts[opt]);
+    Object.keys(NeuralNetwork.trainDefaults).forEach(opt => this.trainOpts[opt] = (opts.hasOwnProperty(opt)) ? opts[opt] : this.trainOpts[opt]);
+    NeuralNetwork._validateTrainingOptions(this.trainOpts);
     this._setLogMethod(opts.log || this.trainOpts.log);
     this.activation = opts.activation || this.activation;
   }
